@@ -1,4 +1,4 @@
-use Test::More tests => 62;
+use Test::More tests => 65;
 
 BEGIN { use_ok('Acme::Colour'); }
 
@@ -127,5 +127,18 @@ $c->mix("red", 0.5);
 is("$c", "salmon", "white and half red is salmon");
 $c->mix("cyan", 0.5);
 is("$c", "dim gray", "salman and half cyan is dim gray");
+
+ok(1, "Colour constants");
+use Acme::Colour constants => 1;
+
+my $red = "red";
+my $green = "green";
+my $yellow = $red + $green;
+is($yellow->colour, "yellow"->colour, "red and green make yellow");
+
+my $cyan = "cyan";
+my $magenta = "magenta";
+my $blue = $cyan - $magenta;
+is($blue->colour, "blue"->colour, "cyan and magenta make blue");
 
 # print "got $c\n";

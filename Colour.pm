@@ -1,17 +1,36 @@
 package Acme::Colour;
+
 use strict;
 use Graphics::ColorNames;
 use List::Util qw(max min);
 use vars qw($VERSION);
 
 # increases when the API changes
-$VERSION = '0.17';
+$VERSION = '0.18';
 
-use overload '""' => \&colour;
+use overload '""' => \&colour,
+             '+'  => \&oadd,
+             '-'  => \&osub;
 
 my(%r, %g, %b);
 
-sub new {
+sub import {
+  my $class = shift;
+  my $hash  = { @_ };
+
+  $class->build_colours();
+
+  if ($hash->{constants}) {
+    overload::constant(
+      'q' => \&createnew
+    );
+  } else {
+    ## do nothing for now
+  }
+}
+
+sub build_colours {
+  my $class = shift;
   my $class = shift;
 
   if (scalar(keys %r) == 0) {
@@ -25,9 +44,36 @@ sub new {
       $b{$colour} = $b;
       #    print "$colour: $r/$g/$b\n";
     }
-
   }
+}
 
+sub createnew {
+  my $colour = shift;
+  my $interp = shift;
+
+  if (exists $r{$interp}) {
+    return Acme::Colour->new( $interp );
+  } else {
+    return $interp;
+  }
+}
+
+sub oadd {
+  my $a = shift;
+  my $b = shift;
+  $a->add( $b );
+  return $a;
+}
+
+sub osub {
+  my $a = shift;
+  my $b = shift;
+  $a->mix( $b );
+  return $a;
+}
+
+sub new {
+  my $class = shift;
   my $self = {};
   bless $self, $class;
 
@@ -137,7 +183,7 @@ Acme::Colour - additive and subtractive human-readable colours
   # pigment
   $c = Acme::Colour->new("white");
   $c->mix("cyan");    # $c->colour now cyan
-  $c->mix("magenta"); # $c->colour now green
+  $c->mix("magenta"); # $c->colour now blue
 
 =head1 DESCRIPTION
 
@@ -180,6 +226,24 @@ The mix() method performs subtractive mixing on the colour. It takes
 in the colour to mix in:
 
   $c->mix("cyan");
+
+=head1 ALTERNATIVE INTERFACE
+
+There is an alternative interface to this module which overloads
+string quoting. This is very cute, but is not recommended in
+production code. Strings containing colour names magically get
+converted into Acme::Colour objects and additive and subtractive
+mixing is performed on these "strings" using "+" and "-":
+
+  use Acme::Colour constants => 1; # note special invocation
+
+  my $red = "red";            # now an Acme::Colour object
+  my $green = "green";        # likewise
+  my $yellow = $red + $green; # add()s the two colours
+
+  my $cyan = "cyan";           # now an Acme::Colour object
+  my $magenta = "magenta";     # likewise
+  my $blue = $cyan - $magenta; # mix()es the two colours
 
 =head1 NOTES
 

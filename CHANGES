@@ -1,5 +1,11 @@
 ChangeLog for Acme::Colour
 
+0.18 Mon Jun 17 15:33:38 GMT 2002
+	- Minor doc patch and support for colour constants
+	  by James Duncan
+
+0.17 ?
+
 0.16 Thu Apr 11 16:02:43 GMT 2002
 	- Fixed minor typo (thanks to Leo Lapworth)
 
