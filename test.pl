@@ -2,7 +2,7 @@
 
 use strict;
 use Test::Exception;
-use Test::More tests => 68;
+use Test::More tests => 73;
 
 BEGIN { use_ok('Acme::Colour'); }
 
@@ -27,6 +27,13 @@ $c->add("blue");
 is($c->colour, "white", "yellow and blue is white");
 $c->add("white");
 is($c->colour, "white", "can't get whiter than white");
+
+# Test factors
+$c = Acme::Colour->new("black");
+ok($c, "should get colour");
+is("$c", "black", "should get black");
+$c->add("red", 0.5);
+is($c->colour, "dark red", "black and 0.5 red is dark red");
 
 $c = Acme::Colour->new("black");
 ok($c, "should get colour");
@@ -147,6 +154,18 @@ is($blue->colour, "blue"->colour, "cyan and magenta make blue");
 
 # Now let's test the errors
 
-throws_ok {Acme::Colour->new("xyzzy")} qr/Colour xyzzy is unknown/;
-throws_ok {$c->add("xyzzy")} qr/Colour xyzzy is unknown/;
-throws_ok {$c->mix("xyzzy")} qr/Colour xyzzy is unknown/;
+throws_ok {$c = Acme::Colour->new("bogus1")} qr/Colour bogus1 is unknown/;
+
+# We have to monkey about on the insides to test this
+$c->{colour} = "bogus2";
+throws_ok {$c->add("bogus3")} qr/Colour bogus2 is unknown/;
+$c->{colour} = "red";
+
+throws_ok {$c->add("bogus4")} qr/Colour bogus4 is unknown/;
+
+# We have to monkey about on the insides to test this
+$c->{colour} = "bogus5";
+throws_ok {$c->mix("bogus6")} qr/Colour bogus5 is unknown/;
+$c->{colour} = "red";
+
+throws_ok {$c->mix("bogus7")} qr/Colour bogus7 is unknown/;

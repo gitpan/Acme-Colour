@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name: Acme-Colour
-version: 1.01
+version: 1.02
 author:
   - Leon Brocard E<lt>F<acme@astray.com>E<gt>
 abstract: additive and subtractive human-readable colours
@@ -15,5 +15,5 @@ requires:
 provides:
   Acme::Colour:
     file: lib/Acme/Colour.pm
-    version: 1.01
+    version: 1.02
 generated_by: Module::Build version 0.25

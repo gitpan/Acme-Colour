@@ -6,11 +6,11 @@ use Graphics::ColorNames;
 use List::Util qw(max min);
 use vars qw($VERSION);
 
-$VERSION = '1.01';
+$VERSION = '1.02';
 
 use overload '""' => \&colour,
-             '+'  => \&oadd,
-             '-'  => \&osub;
+             '+'  => \&_oadd,
+             '-'  => \&_osub;
 
 my(%r, %g, %b);
 
@@ -18,18 +18,18 @@ sub import {
   my $class = shift;
   my $hash  = { @_ };
 
-  $class->build_colours();
+  $class->_build_colours();
 
   if ($hash->{constants}) {
     overload::constant(
-      'q' => \&createnew
+      'q' => \&_createnew
     );
   } else {
     # do nothing for now
   }
 }
 
-sub build_colours {
+sub _build_colours {
   my $class = shift;
 
   if (scalar(keys %r) == 0) {
@@ -46,7 +46,7 @@ sub build_colours {
   }
 }
 
-sub createnew {
+sub _createnew {
   my $colour = shift;
   my $interp = shift;
 
@@ -57,14 +57,14 @@ sub createnew {
   }
 }
 
-sub oadd {
+sub _oadd {
   my $a = shift;
   my $b = shift;
   $a->add($b);
   return $a;
 }
 
-sub osub {
+sub _osub {
   my $a = shift;
   my $b = shift;
   $a->mix($b);
@@ -119,7 +119,7 @@ sub add {
   $r1 = 1 if $r1 > 1;
   $g1 = 1 if $g1 > 1;
   $b1 = 1 if $b1 > 1;
-  my $closest = $self->closest($r1, $g1, $b1);
+  my $closest = $self->_closest($r1, $g1, $b1);
   $self->{colour} = $closest;
 }
 
@@ -151,11 +151,11 @@ sub mix {
 
   ($r1, $g1, $b1) = (1 - $r1, 1 - $g1, 1 - $b1);
 
-  my $closest = $self->closest($r1, $g1, $b1);
+  my $closest = $self->_closest($r1, $g1, $b1);
   $self->{colour} = $closest;
 }
 
-sub closest {
+sub _closest {
   my($self, $r1, $g1, $b1) = @_;
 
   my $bestdelta = 100;
@@ -233,6 +233,13 @@ The mix() method performs subtractive mixing on the colour. It takes
 in the colour to mix in:
 
   $c->mix("cyan");
+
+=head2 default()
+
+The default() method returns the default colour, white. You may
+override this in a subclass.
+
+  $c = Acme::Colour->new(); # white by default
 
 =head1 ALTERNATIVE INTERFACE
 
