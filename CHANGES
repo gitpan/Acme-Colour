@@ -1,5 +1,9 @@
 ChangeLog for Acme::Colour
 
+1.01 Fri May 14 16:21:26 BST 2004
+	- regenerated with new Module::Build, which means the
+	  Makefile.PL now contains Test::Exception
+
 1.00 Sun Sep 28 17:50:26 BST 2003
 	- moved to Module::Build
 	- throw exceptions using Error when given unknown colours
