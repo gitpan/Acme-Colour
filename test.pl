@@ -1,7 +1,8 @@
 #!/usr/bin/perl -w
 
 use strict;
-use Test::More tests => 65;
+use Test::Exception;
+use Test::More tests => 68;
 
 BEGIN { use_ok('Acme::Colour'); }
 
@@ -9,7 +10,7 @@ BEGIN { use_ok('Acme::Colour'); }
 ok(1, "Basic test");
 
 my $c = Acme::Colour->new();
-is(ref($c), 'Acme::Colour', "should get Acme::Colour object");
+isa_ok($c, 'Acme::Colour', "should get Acme::Colour object");
 is($c->colour, "white", "should get white object");
 
 # Test additive colour
@@ -144,4 +145,8 @@ my $magenta = "magenta";
 my $blue = $cyan - $magenta;
 is($blue->colour, "blue"->colour, "cyan and magenta make blue");
 
-# print "got $c\n";
+# Now let's test the errors
+
+throws_ok {Acme::Colour->new("xyzzy")} qr/Colour xyzzy is unknown/;
+throws_ok {$c->add("xyzzy")} qr/Colour xyzzy is unknown/;
+throws_ok {$c->mix("xyzzy")} qr/Colour xyzzy is unknown/;

@@ -1,12 +1,12 @@
 package Acme::Colour;
 
 use strict;
+use Error;
 use Graphics::ColorNames;
 use List::Util qw(max min);
 use vars qw($VERSION);
 
-# increases when the API changes
-$VERSION = '0.20';
+$VERSION = '1.00';
 
 use overload '""' => \&colour,
              '+'  => \&oadd,
@@ -25,7 +25,7 @@ sub import {
       'q' => \&createnew
     );
   } else {
-    ## do nothing for now
+    # do nothing for now
   }
 }
 
@@ -51,7 +51,7 @@ sub createnew {
   my $interp = shift;
 
   if (exists $r{$interp}) {
-    return Acme::Colour->new( $interp );
+    return Acme::Colour->new($interp);
   } else {
     return $interp;
   }
@@ -60,31 +60,37 @@ sub createnew {
 sub oadd {
   my $a = shift;
   my $b = shift;
-  $a->add( $b );
+  $a->add($b);
   return $a;
 }
 
 sub osub {
   my $a = shift;
   my $b = shift;
-  $a->mix( $b );
+  $a->mix($b);
   return $a;
 }
 
 sub new {
-  my $class = shift;
+  my($class, $colour) = @_;
+
   my $self = {};
   bless $self, $class;
 
-  my $colour = shift;
-  $colour = $self->default unless defined $colour;
-  $self->{colour} = $colour;
+  if (defined $colour) {
+    unless (exists $r{$colour}) {
+      throw Error::Simple("Colour $colour is unknown");
+    }
+    $self->{colour} = $colour;
+  } else {
+    $self->{colour} = $self->default;
+  }
 
   return $self;
 }
 
 sub default {
-  return ("white");
+  return "white";
 }
 
 sub colour {
@@ -100,9 +106,12 @@ sub add {
 
   my $colour = $self->colour;
 
-  warn "Colour $colour is unknown" unless exists $r{$colour};
+  throw Error::Simple("Colour $colour is unknown")
+    unless exists $r{$colour};
+  throw Error::Simple("Colour $add is unknown")
+    unless exists $r{$add};
+
   my($r1, $g1, $b1) = ($r{$colour}, $g{$colour}, $b{$colour});
-  warn "Colour $add is unknown" unless exists $r{$add};
   my($r2, $g2, $b2) = ($r{$add}, $g{$add}, $b{$add});
   $r1 += $r2 * $factor;
   $g1 += $g2 * $factor;
@@ -110,9 +119,7 @@ sub add {
   $r1 = 1 if $r1 > 1;
   $g1 = 1 if $g1 > 1;
   $b1 = 1 if $b1 > 1;
-#  warn "added: $r1, $g1, $b1\n";
   my $closest = $self->closest($r1, $g1, $b1);
-#  warn "=~ $closest\n";
   $self->{colour} = $closest;
 }
 
@@ -124,9 +131,12 @@ sub mix {
 
   my $colour = $self->colour;
 
-  warn "Colour $colour is unknown" unless exists $r{$colour};
+  throw Error::Simple("Colour $colour is unknown")
+    unless exists $r{$colour};
+  throw Error::Simple("Colour $add is unknown")
+    unless exists $r{$add};
+
   my($r1, $g1, $b1) = ($r{$colour}, $g{$colour}, $b{$colour});
-  warn "Colour $colour is unknown" unless exists $r{$colour};
   my($r2, $g2, $b2) = ($r{$add}, $g{$add}, $b{$add});
 
   ($r1, $g1, $b1) = (1 - $r1, 1 - $g1, 1 - $b1);
@@ -141,9 +151,7 @@ sub mix {
 
   ($r1, $g1, $b1) = (1 - $r1, 1 - $g1, 1 - $b1);
 
-#  warn "added: $r1, $g1, $b1\n";
   my $closest = $self->closest($r1, $g1, $b1);
-#  warn "=~ $closest\n";
   $self->{colour} = $closest;
 }
 
@@ -249,6 +257,8 @@ mixing is performed on these "strings" using "+" and "-":
 A good explanation of colour and colour mixing is available at:
 http://www.photoshopfocus.com/cool_tips/tips_color_basics_p1.htm
 
+This module throws an exception upon unknown colours.
+
 No, "colour" is not a typo.
 
 =head1 AUTHOR
@@ -257,7 +267,7 @@ Leon Brocard E<lt>F<acme@astray.com>E<gt>
 
 =head1 COPYRIGHT
 
-Copyright (C) 2002, Leon Brocard
+Copyright (C) 2002-3, Leon Brocard
 
 This module is free software; you can redistribute it or modify it
 under the same terms as Perl itself.
