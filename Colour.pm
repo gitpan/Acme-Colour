@@ -6,7 +6,7 @@ use List::Util qw(max min);
 use vars qw($VERSION);
 
 # increases when the API changes
-$VERSION = '0.18';
+$VERSION = '0.19';
 
 use overload '""' => \&colour,
              '+'  => \&oadd,
@@ -30,7 +30,6 @@ sub import {
 }
 
 sub build_colours {
-  my $class = shift;
   my $class = shift;
 
   if (scalar(keys %r) == 0) {
