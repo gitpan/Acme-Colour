@@ -5,7 +5,7 @@ use List::Util qw(max min);
 use vars qw($VERSION);
 
 # increases when the API changes
-$VERSION = '0.16';
+$VERSION = '0.17';
 
 use overload '""' => \&colour;
 
@@ -161,7 +161,7 @@ which is the initial colour used:
 
 =head2 colour()
 
-The colour() method returns the current colour. Not that
+The colour() method returns the current colour. Note that
 stringification of the colour object magically returns the colour too:
 
   $colour = $c->colour; # black

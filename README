@@ -25,25 +25,29 @@ DESCRIPTION
 
 METHODS
   new()
+
     The new() method creates a new colour. It takes an optional argument
     which is the initial colour used:
 
       $c = Acme::Colour->new("black");
 
   colour()
-    The colour() method returns the current colour. Not that stringification
-    of the colour object magically returns the colour too:
+
+    The colour() method returns the current colour. Note that
+    stringification of the colour object magically returns the colour too:
 
       $colour = $c->colour; # black
       print "The colour is $c!\n";
 
   add()
+
     The add() method performs additive mixing on the colour. It takes in the
     colour to add in:
 
       $c->add("red");
 
   mix()
+
     The mix() method performs subtractive mixing on the colour. It takes in
     the colour to mix in:
 
