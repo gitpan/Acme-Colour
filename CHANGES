@@ -1,5 +1,9 @@
 ChangeLog for Acme::Colour
 
+0.20 Tue Aug 20 19:35:23 BST 2002
+	- require 5.6.1 as it runs out of memory for some
+          reason on 5.005_003 (spotted by Daniel)
+
 0.19 Tue Jul  2 11:31:32 BST 2002
 	- Fix minor warning
 

@@ -1,3 +1,5 @@
+require 5.006_001; # hmmm, runs out of memory on old version
+
 use ExtUtils::MakeMaker;
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.

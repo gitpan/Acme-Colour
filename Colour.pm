@@ -6,7 +6,7 @@ use List::Util qw(max min);
 use vars qw($VERSION);
 
 # increases when the API changes
-$VERSION = '0.19';
+$VERSION = '0.20';
 
 use overload '""' => \&colour,
              '+'  => \&oadd,
