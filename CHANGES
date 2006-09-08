@@ -1,5 +1,9 @@
 ChangeLog for Acme::Colour
 
+1.03 Fri Sep  8 17:34:37 BST 2006
+        - added pod test and pod coverage test
+        - perltidy
+
 1.02 Tue Sep 21 14:03:22 BST 2004
         - renamed private methods to start with _
         - documented the default method

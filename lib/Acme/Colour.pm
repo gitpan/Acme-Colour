@@ -6,169 +6,175 @@ use Graphics::ColorNames;
 use List::Util qw(max min);
 use vars qw($VERSION);
 
-$VERSION = '1.02';
+$VERSION = '1.03';
 
-use overload '""' => \&colour,
-             '+'  => \&_oadd,
-             '-'  => \&_osub;
+use overload
+    '""' => \&colour,
+    '+'  => \&_oadd,
+    '-'  => \&_osub;
 
-my(%r, %g, %b);
+my ( %r, %g, %b );
 
 sub import {
-  my $class = shift;
-  my $hash  = { @_ };
+    my $class = shift;
+    my $hash  = {@_};
 
-  $class->_build_colours();
+    $class->_build_colours();
 
-  if ($hash->{constants}) {
-    overload::constant(
-      'q' => \&_createnew
-    );
-  } else {
-    # do nothing for now
-  }
+    if ( $hash->{constants} ) {
+        overload::constant( 'q' => \&_createnew );
+    } else {
+
+        # do nothing for now
+    }
 }
 
 sub _build_colours {
-  my $class = shift;
+    my $class = shift;
 
-  if (scalar(keys %r) == 0) {
-    tie my %COLOURS, 'Graphics::ColorNames', 'X';
+    if ( scalar( keys %r ) == 0 ) {
+        tie my %COLOURS, 'Graphics::ColorNames', 'X';
 
-    foreach my $colour (keys %COLOURS) {
-      next if $colour =~ /\d/;
-      my($r, $g, $b) = map { hex($_) / 255 } ($COLOURS{$colour} =~ /^\#?([\da-f][\da-f])([\da-f][\da-f])([\da-f][\da-f])/i);
-      $r{$colour} = $r;
-      $g{$colour} = $g;
-      $b{$colour} = $b;
-      #    print "$colour: $r/$g/$b\n";
+        foreach my $colour ( keys %COLOURS ) {
+            next if $colour =~ /\d/;
+            my ( $r, $g, $b )
+                = map { hex($_) / 255 }
+                ( $COLOURS{$colour}
+                    =~ /^\#?([\da-f][\da-f])([\da-f][\da-f])([\da-f][\da-f])/i
+                );
+            $r{$colour} = $r;
+            $g{$colour} = $g;
+            $b{$colour} = $b;
+
+            #    print "$colour: $r/$g/$b\n";
+        }
     }
-  }
 }
 
 sub _createnew {
-  my $colour = shift;
-  my $interp = shift;
+    my $colour = shift;
+    my $interp = shift;
 
-  if (exists $r{$interp}) {
-    return Acme::Colour->new($interp);
-  } else {
-    return $interp;
-  }
+    if ( exists $r{$interp} ) {
+        return Acme::Colour->new($interp);
+    } else {
+        return $interp;
+    }
 }
 
 sub _oadd {
-  my $a = shift;
-  my $b = shift;
-  $a->add($b);
-  return $a;
+    my $a = shift;
+    my $b = shift;
+    $a->add($b);
+    return $a;
 }
 
 sub _osub {
-  my $a = shift;
-  my $b = shift;
-  $a->mix($b);
-  return $a;
+    my $a = shift;
+    my $b = shift;
+    $a->mix($b);
+    return $a;
 }
 
 sub new {
-  my($class, $colour) = @_;
+    my ( $class, $colour ) = @_;
 
-  my $self = {};
-  bless $self, $class;
+    my $self = {};
+    bless $self, $class;
 
-  if (defined $colour) {
-    unless (exists $r{$colour}) {
-      throw Error::Simple("Colour $colour is unknown");
+    if ( defined $colour ) {
+        unless ( exists $r{$colour} ) {
+            throw Error::Simple("Colour $colour is unknown");
+        }
+        $self->{colour} = $colour;
+    } else {
+        $self->{colour} = $self->default;
     }
-    $self->{colour} = $colour;
-  } else {
-    $self->{colour} = $self->default;
-  }
 
-  return $self;
+    return $self;
 }
 
 sub default {
-  return "white";
+    return "white";
 }
 
 sub colour {
-  my $self = shift;
-  return $self->{colour};
+    my $self = shift;
+    return $self->{colour};
 }
 
 sub add {
-  my $self = shift;
-  my $add = shift;
-  my $factor = shift;
-  $factor = 1 unless defined $factor;
+    my $self   = shift;
+    my $add    = shift;
+    my $factor = shift;
+    $factor = 1 unless defined $factor;
 
-  my $colour = $self->colour;
+    my $colour = $self->colour;
 
-  throw Error::Simple("Colour $colour is unknown")
-    unless exists $r{$colour};
-  throw Error::Simple("Colour $add is unknown")
-    unless exists $r{$add};
+    throw Error::Simple("Colour $colour is unknown")
+        unless exists $r{$colour};
+    throw Error::Simple("Colour $add is unknown")
+        unless exists $r{$add};
 
-  my($r1, $g1, $b1) = ($r{$colour}, $g{$colour}, $b{$colour});
-  my($r2, $g2, $b2) = ($r{$add}, $g{$add}, $b{$add});
-  $r1 += $r2 * $factor;
-  $g1 += $g2 * $factor;
-  $b1 += $b2 * $factor;
-  $r1 = 1 if $r1 > 1;
-  $g1 = 1 if $g1 > 1;
-  $b1 = 1 if $b1 > 1;
-  my $closest = $self->_closest($r1, $g1, $b1);
-  $self->{colour} = $closest;
+    my ( $r1, $g1, $b1 ) = ( $r{$colour}, $g{$colour}, $b{$colour} );
+    my ( $r2, $g2, $b2 ) = ( $r{$add},    $g{$add},    $b{$add} );
+    $r1 += $r2 * $factor;
+    $g1 += $g2 * $factor;
+    $b1 += $b2 * $factor;
+    $r1 = 1 if $r1 > 1;
+    $g1 = 1 if $g1 > 1;
+    $b1 = 1 if $b1 > 1;
+    my $closest = $self->_closest( $r1, $g1, $b1 );
+    $self->{colour} = $closest;
 }
 
 sub mix {
-  my $self = shift;
-  my $add = shift;
-  my $factor = shift;
-  $factor = 1 unless defined $factor;
+    my $self   = shift;
+    my $add    = shift;
+    my $factor = shift;
+    $factor = 1 unless defined $factor;
 
-  my $colour = $self->colour;
+    my $colour = $self->colour;
 
-  throw Error::Simple("Colour $colour is unknown")
-    unless exists $r{$colour};
-  throw Error::Simple("Colour $add is unknown")
-    unless exists $r{$add};
+    throw Error::Simple("Colour $colour is unknown")
+        unless exists $r{$colour};
+    throw Error::Simple("Colour $add is unknown")
+        unless exists $r{$add};
 
-  my($r1, $g1, $b1) = ($r{$colour}, $g{$colour}, $b{$colour});
-  my($r2, $g2, $b2) = ($r{$add}, $g{$add}, $b{$add});
+    my ( $r1, $g1, $b1 ) = ( $r{$colour}, $g{$colour}, $b{$colour} );
+    my ( $r2, $g2, $b2 ) = ( $r{$add},    $g{$add},    $b{$add} );
 
-  ($r1, $g1, $b1) = (1 - $r1, 1 - $g1, 1 - $b1);
-  ($r2, $g2, $b2) = (1 - $r2, 1 - $g2, 1 - $b2);
+    ( $r1, $g1, $b1 ) = ( 1 - $r1, 1 - $g1, 1 - $b1 );
+    ( $r2, $g2, $b2 ) = ( 1 - $r2, 1 - $g2, 1 - $b2 );
 
-  $r1 += $r2 * $factor;
-  $g1 += $g2 * $factor;
-  $b1 += $b2 * $factor;
-  $r1 = 1 if $r1 > 1;
-  $g1 = 1 if $g1 > 1;
-  $b1 = 1 if $b1 > 1;
+    $r1 += $r2 * $factor;
+    $g1 += $g2 * $factor;
+    $b1 += $b2 * $factor;
+    $r1 = 1 if $r1 > 1;
+    $g1 = 1 if $g1 > 1;
+    $b1 = 1 if $b1 > 1;
 
-  ($r1, $g1, $b1) = (1 - $r1, 1 - $g1, 1 - $b1);
+    ( $r1, $g1, $b1 ) = ( 1 - $r1, 1 - $g1, 1 - $b1 );
 
-  my $closest = $self->_closest($r1, $g1, $b1);
-  $self->{colour} = $closest;
+    my $closest = $self->_closest( $r1, $g1, $b1 );
+    $self->{colour} = $closest;
 }
 
 sub _closest {
-  my($self, $r1, $g1, $b1) = @_;
+    my ( $self, $r1, $g1, $b1 ) = @_;
 
-  my $bestdelta = 100;
-  my $closest;
-  foreach my $colour (sort keys %r) {
-    my($r2, $g2, $b2) = ($r{$colour}, $g{$colour}, $b{$colour});
-    my $delta = sqrt(($r1 - $r2)**2 + ($g1 - $g2)**2 + ($b1 - $b2)**2);
-    if ($delta < $bestdelta) {
-      $closest = $colour;
-      $bestdelta = $delta;
+    my $bestdelta = 100;
+    my $closest;
+    foreach my $colour ( sort keys %r ) {
+        my ( $r2, $g2, $b2 ) = ( $r{$colour}, $g{$colour}, $b{$colour} );
+        my $delta
+            = sqrt( ( $r1 - $r2 )**2 + ( $g1 - $g2 )**2 + ( $b1 - $b2 )**2 );
+        if ( $delta < $bestdelta ) {
+            $closest   = $colour;
+            $bestdelta = $delta;
+        }
     }
-  }
-  return $closest;
+    return $closest;
 }
 
 1;
