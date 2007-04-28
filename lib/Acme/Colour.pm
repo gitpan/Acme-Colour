@@ -1,12 +1,12 @@
 package Acme::Colour;
-
 use strict;
+use warnings;
 use Error;
 use Graphics::ColorNames;
 use List::Util qw(max min);
 use vars qw($VERSION);
 
-$VERSION = '1.03';
+$VERSION = '1.04';
 
 use overload
     '""' => \&colour,
@@ -286,3 +286,4 @@ This module is free software; you can redistribute it or modify it
 under the same terms as Perl itself.
 
 =cut
+

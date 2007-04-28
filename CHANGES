@@ -1,5 +1,10 @@
 ChangeLog for Acme::Colour
 
+1.04 Sat Apr 28 16:19:00 CEST 2007
+    - perltidy
+    - add LICENSE, META.yml, examples/acme_colour.pl
+    - add perlcritic test
+
 1.03 Fri Sep  8 17:34:37 BST 2006
         - added pod test and pod coverage test
         - perltidy
