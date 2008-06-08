@@ -33,7 +33,7 @@ $c = Acme::Colour->new("black");
 ok($c, "should get colour");
 is("$c", "black", "should get black");
 $c->add("red", 0.5);
-is($c->colour, "dark red", "black and 0.5 red is dark red");
+like($c->colour, qr/dark ?red/, "black and 0.5 red is dark red");
 
 $c = Acme::Colour->new("black");
 ok($c, "should get colour");
@@ -121,7 +121,7 @@ $c = Acme::Colour->new("orange");
 ok($c, "should get colour");
 is("$c", "orange", "should get orange");
 $c->mix("brown");
-is("$c", "dark red", "orange and brown is dark red");
+like("$c", qr/dark ?red/, "orange and brown is dark red");
 
 $c = Acme::Colour->new("white");
 ok($c, "should get colour");
@@ -137,7 +137,7 @@ is("$c", "white", "should get white");
 $c->mix("red", 0.5);
 is("$c", "salmon", "white and half red is salmon");
 $c->mix("cyan", 0.5);
-is("$c", "dim gray", "salman and half cyan is dim gray");
+like("$c", qr/dim ?gray/, "salman and half cyan is dim gray");
 
 ok(1, "Colour constants");
 use Acme::Colour constants => 1;

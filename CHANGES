@@ -1,5 +1,8 @@
 ChangeLog for Acme::Colour
 
+1.05 Sun Jun  8 10:00:05 BST 2008
+    - update the test suite to handle both "dark red" and "darkred"
+
 1.04 Sat Apr 28 16:19:00 CEST 2007
     - perltidy
     - add LICENSE, META.yml, examples/acme_colour.pl
