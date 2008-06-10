@@ -1,5 +1,8 @@
 ChangeLog for Acme::Colour
 
+1.06 Tue Jun 10 14:51:37 BST 2008
+    - remove the Perl::Critic test from the distribution
+
 1.05 Sun Jun  8 10:00:05 BST 2008
     - update the test suite to handle both "dark red" and "darkred"
 

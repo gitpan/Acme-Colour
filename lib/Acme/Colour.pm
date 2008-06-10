@@ -6,7 +6,7 @@ use Graphics::ColorNames;
 use List::Util qw(max min);
 use vars qw($VERSION);
 
-$VERSION = '1.05';
+$VERSION = '1.06';
 
 use overload
     '""' => \&colour,
